@@ -15,7 +15,7 @@ def home():
     page = Html(Head(Title("Title")), Body(H1("This page is very nice"), Br(),P("Yes it is")))
     return page
 """
-
+"""defining routes
 @app.get("/")
 def home():
     return H1('Hello, World')
@@ -26,3 +26,4 @@ def post_or_put():
 @rt("/")
 def get():
     pass
+"""
