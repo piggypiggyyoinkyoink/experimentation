@@ -10,4 +10,5 @@ serve()
 """
 @app.get("/")
 def home():
-    return Div(H1("Hello World"))
+    page = Html(Head(Title("Title")), Body(H1("This page is very nice"), Br(),P("Yes it is")))
+    return page
