@@ -157,7 +157,7 @@ async def get(location : str):
     print("hi")
     loc = (await(anext(getCoords(location))))
     
-    return EventStream((await anext(weather(loc))))
+    return EventStream(((weather(loc))))
 """
 @app.get("/weather/Nottingham")
 async def get():
@@ -185,7 +185,7 @@ async def number_generator():
     while not shutdown_event.is_set():
         data = Article(random.randint(1, 100))
         yield sse_message(data)
-        await sleep(1)
+        await sleep(10)
 
 @app.get("/number-stream")
 async def get(): return EventStream(number_generator())
