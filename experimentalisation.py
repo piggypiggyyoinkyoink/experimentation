@@ -97,3 +97,5 @@ async def home():
     
     
     return page
+
+serve()
