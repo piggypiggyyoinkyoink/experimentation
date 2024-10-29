@@ -1,88 +1,5 @@
-"""from fasthtml.common import *
-
-app,rt = fast_app()"""
-
-""" basic helo world
-@rt('/')
-def get(): return Div(P('Hello World!'), hx_get="/change")
-
-serve()
-"""
-
-""" some html elements
-@app.get("/")
-def home():
-    page = Html(Head(Title("Title")), Body(H1("This page is very nice"), Br(),P("Yes it is")))
-    return page
-"""
-"""defining routes
-@app.get("/")
-def home():
-    return H1('Hello, World')
-
-@app.route("/", methods=['post', 'put'])
-def post_or_put():
-    return "got a POST or PUT request"
-@rt("/")
-def get():
-    pass
-"""
-"""
-from fasthtml.common import *
-css = Style(':root {--pico-font-size:90%,--pico-font-family: Pacifico, cursive;}')
-app = FastHTML(hdrs=(picolink, css))
-
-@app.route("/")
-def get():
-    return (Title("Hello World"), 
-            Main(H1('Hello, World'), cls="container"))"""
-
 from fasthtml.common import *
 import requests
-"""
-app = FastHTML()
-messages = ["This is a message, which will get rendered as a paragraph"]
-
-@app.get("/")
-def home():
-    return Main(H1('Messages'), 
-        *[P(msg) for msg in messages], #i have no idea why but removing the * breaks it
-        A("Link to Page 2 (to add messages)", href="/page2"))
-
-@app.get("/page2")
-def page2():
-    return Main(P("Add a message with the form below:"),
-                Form(Input(type="text", name="data"),
-                     Button("Submit"),
-                     action="/", method="post"))
-
-@app.post("/")
-def add_message(data:str):
-    messages.append(data)
-    return home()
-    """
-"""
-app = FastHTML()
-
-count = 0
-
-@app.get("/")
-def home():
-    return Title("Count Demo"), Main(
-        H1("Count Demo"),
-        P(f"Count is set to {count}", id="count"),
-        Button("Increment", hx_post="/increment", hx_target="#count", hx_swap="innerHTML")
-    )
-
-@app.post("/increment")
-def increment():
-    print("incrementing")
-    global count
-    count += 1
-    return f"Count is set to {count}"
-"""
-
-"""Img(src = f"https://openweathermap.org/img/wn/{response['weather'][0]['icon']}@2x.png", style = "width: 100px"),"""
 
 import random
 from asyncio import sleep
@@ -113,10 +30,6 @@ def home():
                         sse_swap="message"))
                         )
     
-    page2 = Body(Div(Div(hx_ext="sse",
-                        sse_connect="/number-stream",
-                        hx_swap="beforeend show:bottom",
-                        sse_swap="message")))
     return page
                         
 
@@ -158,15 +71,6 @@ async def get(location : str):
     loc = (await(anext(getCoords(location))))
     
     return EventStream(((weather(loc))))
-"""
-@app.get("/weather/Nottingham")
-async def get():
-    location = "Nottingham"
-    print("hi")
-    loc = await getCoords(location)
-    
-    return EventStream(weather(loc))
-    """
 
 
 @app.get("/dingus")
