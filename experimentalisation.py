@@ -1,6 +1,6 @@
 from fasthtml.common import *
 import requests
-
+from icecream import ic
 import random
 from asyncio import sleep
 from fasthtml.common import *
@@ -61,9 +61,11 @@ async def weather(response):
 @app.get("/weather/{location}")
 async def get(location : str):
     print("hi")
-    loc = (await(anext(getCoords(location))))
-    
-    return EventStream(((weather(loc))))
+    try:
+        loc = (await(anext(getCoords(location))))
+        
+        return EventStream(((weather(loc))))
+    except:return EventStream(sse_message(P("Invalid location")))
 
 
 @app.get("/dingus")
