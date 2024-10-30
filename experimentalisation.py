@@ -6,8 +6,8 @@ from asyncio import sleep
 from fasthtml.common import *
 
 hdrs=(Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js"),)
-app = FastHTML(hdrs=hdrs)
-@app.get("/{loc}")
+app = FastHTML(hdrs=hdrs, exts="ws")
+@app.get("/w/{loc}")
 def home(loc: str):
     page =     Head(Title("Durham Weather")),
     page=           Body(
@@ -88,5 +88,27 @@ async def number_generator():
 
 @app.get("/number-stream")
 async def get(): return EventStream(number_generator())
+
+rt = app.route
+
+def mk_inp(): return Input(id='msg')
+nid = 'notifications'
+
+@rt('/test')
+async def get():
+    cts = Div(
+        Div(id=nid),
+        Form(mk_inp(), id='form', ws_send=True),
+        hx_ext='ws', ws_connect='/ws')
+    return Titled('Websocket Test', cts)
+
+async def on_connect(send): await send(Div('Hello, you have connected', id=nid))
+async def on_disconnect( ): print('Disconnected!')
+
+@app.ws('/ws', conn=on_connect, disconn=on_disconnect)
+async def ws(msg:str, send):
+    await send(Div('Hello ' + msg, id=nid))
+    await sleep(2)
+    return Div('Goodbye ' + msg, id=nid), mk_inp()
 
 serve()
