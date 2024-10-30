@@ -67,7 +67,7 @@ async def get(location : str):
         return EventStream(((weather(loc))))
     except:return EventStream(sse_message(P("Invalid location")))
 
-
+#everything south of this point is stolen directly from google
 @app.get("/dingus")
 def index():
     #print("hi")
@@ -111,4 +111,4 @@ async def ws(msg:str, send):
     await sleep(2)
     return Div('Goodbye ' + msg, id=nid), mk_inp()
 
-serve()
+serve()#except the serve() function
