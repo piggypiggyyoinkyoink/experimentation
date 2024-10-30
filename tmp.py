@@ -1,13 +1,14 @@
 from fasthtml.common import *
 import requests
-from icecream import ic
 import random
 from asyncio import sleep
 from fasthtml.common import *
+from starlette.testclient import TestClient
+from icecream import ic
 
 hdrs=(Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js"),)
-app = FastHTML(hdrs=hdrs, exts="ws")
-@app.get("/w/{loc}")
+app = FastHTML(hdrs=hdrs, debug=True)
+@app.get("/{loc}")
 def home(loc: str):
     page =     Head(Title("Durham Weather")),
     page=           Body(
@@ -24,16 +25,19 @@ def home(loc: str):
 @app.post("/")
 def form(data:str):
     return home(data)
-                        
+
 
 shutdown_event = signal_shutdown()
 
 async def getCoords(loc):
     while not shutdown_event.is_set():
         response = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={loc},GB&limit=1&appid=9044863ea8fb7c4bb152d8b4e14469b0").json()
-        coords = [response[0]["lat"], response[0]["lon"]]
+        try:
+            coords = [response[0]["lat"], response[0]["lon"]]
 
-        yield (await (location(coords)))
+            yield (await (location(coords)))
+        except:
+            yield("UH_OH")
         await sleep(90) # every 90 seconds
 
 
@@ -61,11 +65,13 @@ async def weather(response):
 @app.get("/weather/{location}")
 async def get(location : str):
     print("hi")
-    try:
-        loc = (await(anext(getCoords(location))))
-        
-        return EventStream(((weather(loc))))
-    except:return EventStream(sse_message(P("Invalid location")))
+    loc = (await(anext(getCoords(location))))
+    ic(loc)
+    if loc == "UH_OH":
+        print("hi2")
+        return EventStream(sse_message(P("Invalid Location")))
+    else:
+        return EventStream(((sse_message(weather(loc)))))
 
 
 @app.get("/dingus")
@@ -89,26 +95,12 @@ async def number_generator():
 @app.get("/number-stream")
 async def get(): return EventStream(number_generator())
 
-rt = app.route
 
-def mk_inp(): return Input(id='msg')
-nid = 'notifications'
+@app.post("/hx")
+def hx(data:str):
+    return weather(location(getCoords(data)))
 
-@rt('/test')
-async def get():
-    cts = Div(
-        Div(id=nid),
-        Form(mk_inp(), id='form', ws_send=True),
-        hx_ext='ws', ws_connect='/ws')
-    return Titled('Websocket Test', cts)
-
-async def on_connect(send): await send(Div('Hello, you have connected', id=nid))
-async def on_disconnect( ): print('Disconnected!')
-
-@app.ws('/ws', conn=on_connect, disconn=on_disconnect)
-async def ws(msg:str, send):
-    await send(Div('Hello ' + msg, id=nid))
-    await sleep(2)
-    return Div('Goodbye ' + msg, id=nid), mk_inp()
-
+client = TestClient(app)
+r = client.get("/")
+print(r.text)
 serve()
