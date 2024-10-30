@@ -7,23 +7,30 @@ from fasthtml.common import *
 
 hdrs=(Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js"),)
 app = FastHTML(hdrs=hdrs)
-@app.get("/{loc}")
-def home(loc: str):
-    page =     Head(Title("Durham Weather")),
-    page=           Body(
-                        Div(Form(Input(type="text", name="data", placeholder = "Enter location"), Button("Submit"), action = "/", method = "post")),
+@app.get("/")
+def home():
+    response = requests.get("https://api.openweathermap.org/data/2.5/weather?lat=54.76&lon=-1.58&appid=9044863ea8fb7c4bb152d8b4e14469b0").json()
+    url = f"https://openweathermap.org/img/wn/{response['weather'][0]['icon']}@2x.png"
+    #print(response)
+    response2 = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q=Durham,GB&limit=1&appid=9044863ea8fb7c4bb152d8b4e14469b0").json()
+    #print(response2)
+    page = Head(Title("Durham Weather")), 
+    page =           Body(Div(P(f"{response['name']}", Br(),Div(
+                        Div( style = f"display: flex; width: 100px; height: 100px; background-image: url('{url}'); float: left"),
+                        Div( P(f"{response['weather'][0]['main']}", style = "margin:auto"), style = "display: flex; width:100px; height:100px; float: left; text-align: center"), style = f"height: 100px; width:210px")),
+                        H2("Temperature:"),
+                        Div( Table(Tr(Th("Temperature"), Th("Feels Like"), Th("Minimum"), Th("Maximum")),
+                                   Tr(Td(round((float(response["main"]["temp"]))-273.15,2), "°C"), Td(round((float(response["main"]["feels_like"]))-273.15,2), "°C"), Td(round((float(response["main"]["temp_min"]))-273.15,2), "°C"), Td(round((float(response["main"]["temp_max"]))-273.15,2), "°C")    ) ) , cls="table" )
+                        ),
+                        
                         #Div(hx_ext = "sse", sse_connect ="/number-stream", hx_swap = "innerHTML", sse_swap = "message")
                         Div(Div(hx_ext="sse",
-                        sse_connect=f"/weather/{loc}",
+                        sse_connect="/weather/Nottingham",
                         hx_swap="innerHTML",
-                        sse_swap="message"), id = "weather")
+                        sse_swap="message"))
                         )
     
     return page
-                        
-@app.post("/")
-def form(data:str):
-    return home(data)
                         
 
 shutdown_event = signal_shutdown()

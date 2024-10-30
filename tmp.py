@@ -1,12 +1,13 @@
 from fasthtml.common import *
 import requests
-
 import random
 from asyncio import sleep
 from fasthtml.common import *
+from starlette.testclient import TestClient
+from icecream import ic
 
 hdrs=(Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js"),)
-app = FastHTML(hdrs=hdrs)
+app = FastHTML(hdrs=hdrs, debug=True)
 @app.get("/{loc}")
 def home(loc: str):
     page =     Head(Title("Durham Weather")),
@@ -24,16 +25,19 @@ def home(loc: str):
 @app.post("/")
 def form(data:str):
     return home(data)
-                        
+
 
 shutdown_event = signal_shutdown()
 
 async def getCoords(loc):
     while not shutdown_event.is_set():
         response = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={loc},GB&limit=1&appid=9044863ea8fb7c4bb152d8b4e14469b0").json()
-        coords = [response[0]["lat"], response[0]["lon"]]
+        try:
+            coords = [response[0]["lat"], response[0]["lon"]]
 
-        yield (await (location(coords)))
+            yield (await (location(coords)))
+        except:
+            yield("UH_OH")
         await sleep(90) # every 90 seconds
 
 
@@ -62,8 +66,12 @@ async def weather(response):
 async def get(location : str):
     print("hi")
     loc = (await(anext(getCoords(location))))
-    
-    return EventStream(((weather(loc))))
+    ic(loc)
+    if loc == "UH_OH":
+        print("hi2")
+        return EventStream(sse_message(P("Invalid Location")))
+    else:
+        return EventStream(((sse_message(weather(loc)))))
 
 
 @app.get("/dingus")
@@ -87,4 +95,12 @@ async def number_generator():
 @app.get("/number-stream")
 async def get(): return EventStream(number_generator())
 
+
+@app.post("/hx")
+def hx(data:str):
+    return weather(location(getCoords(data)))
+
+client = TestClient(app)
+r = client.get("/")
+print(r.text)
 serve()
