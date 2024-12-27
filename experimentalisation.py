@@ -1,9 +1,6 @@
 from fasthtml.common import *
 import requests
-from icecream import ic
-import random
 from asyncio import sleep
-from fasthtml.common import *
 
 hdrs=(Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js"),)
 app = FastHTML(hdrs=hdrs, exts="ws")
