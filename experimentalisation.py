@@ -9,10 +9,10 @@ hdrs=(Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js"),)
 app = FastHTML(hdrs=hdrs, exts="ws")
 @app.get("/w/{loc}")
 def home(loc: str):
+    print("help")
     page =     Head(Title("Durham Weather")),
     page=           Body(
                         Div(Form(Input(type="text", name="data", placeholder = "Enter location"), Button("Submit"), action = "/", method = "post")),
-                        #Div(hx_ext = "sse", sse_connect ="/number-stream", hx_swap = "innerHTML", sse_swap = "message")
                         Div(Div(hx_ext="sse",
                         sse_connect=f"/weather/{loc}",
                         hx_swap="innerHTML",
@@ -25,7 +25,9 @@ def home(loc: str):
 def form(data:str):
     return home(data)
                         
-
+@app.get("/")
+def start():
+    return home("Durham")
 shutdown_event = signal_shutdown()
 
 async def getCoords(loc):
@@ -67,7 +69,8 @@ async def get(location : str):
         return EventStream(((weather(loc))))
     except:return EventStream(sse_message(P("Invalid location")))
 
-#everything south of this point is stolen directly from google
+#everything commented out is stolen directly from google, used for reference    
+"""
 @app.get("/dingus")
 def index():
     #print("hi")
@@ -110,5 +113,5 @@ async def ws(msg:str, send):
     await send(Div('Hello ' + msg, id=nid))
     await sleep(2)
     return Div('Goodbye ' + msg, id=nid), mk_inp()
-
+"""
 serve()#except the serve() function
