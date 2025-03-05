@@ -5,7 +5,7 @@
     }
     let answers = ["Absolutely!", "Definitely", "Perhaps", "Let's see", "Not a chance", "Nope"]
     
-    let { question = "is Jack gay?", answer=getRandomAnswer()} = $props();
+    let { question = "Am I going to succeed in life?", answer=getRandomAnswer()} = $props();
     
 </script>
 

@@ -13,3 +13,4 @@
 
 <Hello />
 <QuestionAndAnswer {...qa}/>
+<QuestionAndAnswer/>
