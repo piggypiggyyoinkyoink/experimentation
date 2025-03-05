@@ -12,7 +12,6 @@ def home(loc: str):
     page =     Head(Title("Durham Weather")),
     page=           Body(
                         Div(Form(Input(type="text", name="data", placeholder = "Enter location"), Button("Submit"), action = "/", method = "post")),
-                        #Div(hx_ext = "sse", sse_connect ="/number-stream", hx_swap = "innerHTML", sse_swap = "message")
                         Div(Div(hx_ext="sse",
                         sse_connect=f"/weather/{loc}",
                         hx_swap="innerHTML",
