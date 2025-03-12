@@ -1,31 +1,60 @@
 <script>
     import Header from "$lib/components/Header.svelte"; //convention is upper case
-    let name = $state("Jamie"); //sveltelicious way of setting default value to a prop
-    let fullName = $derived(name + " " + "Smith") //fullName is derived from name, i.e. updates whenever the value of name changes
-
-    let status = $state("OPEN");
-
-    function toggleStatus(){
-        status = status === "OPEN"? "CLOSED" : "OPEN"; //toggles status between open and closed
-    }
+    
+    let formState = $state({
+        name: "",
+        birthday:"",
+        step:0,
+        error:""
+    });
 </script>
 
-<Header {name}/>
-<h2>{fullName}</h2>
+<Header name = {formState.name} />
+<main>
+    <p> Step {formState.step + 1}</p>
+    
 
-<input type = "text" bind:value={name} /> <!-- variable name is auto updated to take the current value of the text field - awesome :) Can also bind variables to html elements -->
-<p>The store is now {status}</p>
-<button onclick={toggleStatus}>Toggle Status</button>
-<!--
+    {#if formState.step === 0}
+        <div>
+            <label for = "name">Your name</label>
+            <input type = "text" id = "name" bind:value={formState.name}>
+        </div>
+        <button onclick ={()=>{
+            if(formState.name !== ""){
+                formState.step += 1;
+                formState.error = "";
+            }else{
+                formState.error = "Please write your name."
+            }
+        }}>Next</button>
+    {:else if formState.step ===1}
+    <div>
+        <label for = "bday">Your birthday</label>
+        <input type = "date" id = "bday" bind:value={formState.birthday}>
+    </div>
+    <button onclick ={()=>{
+        if(formState.birthday !== ""){
+            formState.step += 1;
+            formState.error = "";
+        }else{
+            formState.error = "Please enter your birthday."
+        }
+    }}>Next</button>
+    {/if}
+    {#if formState.error !==""}
+        <p class="error">{formState.error}</p>
 
-Alternative: 
-<button {onclick}>Toggle Status</button>
-Note: requires function in <script> to be called onclick() -> probably not ideal if you want multiple onclicks, but makes sense for small, simple modular components
+    {/if}
+</main>
 
-Alternative 2: 
-<button onclick = {()=>{
-    status = status === "OPEN"? "CLOSED" : "OPEN";  //same as above, but with arrow function
-}}>Toggle Status</button
->
-
--->
+<style> /*Note: the scope of these CSS styles is restricted to this component, not other components e.g. Header that are imported by it. Likewise, the scope is restricted to this component when other components import this one.*/
+    div{
+        background:aliceblue;
+    }
+    .error{
+        color:red;
+    }
+    :global(div){ /*This is a CSS style with global scope, not always recommended*/
+        color:rgb(51, 80, 55);
+    }
+</style>

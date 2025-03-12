@@ -2,9 +2,18 @@
     let {name, fakeName=null} = $props(); //fakeName has a default value null, so is an optional parameter
 </script>
 
-<h1>Hello {name}</h1>
+<div>
+    
+    <h1>{#if name}{name}{:else}User{/if}'s Form'</h1>
+    
+</div>
+<!--
 <h2>{name.replaceAll("a", "o") }</h2>
-<p>{fakeName}</p>
-<style>
 
+<p>{fakeName}</p>
+-->
+<style>
+    div{
+        background:coral;
+    }
 </style>
