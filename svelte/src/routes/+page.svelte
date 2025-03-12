@@ -9,11 +9,16 @@
     });
 </script>
 
-<Header name = {formState.name} />
+<Header name = {formState.name}>
+    <p>Hello :)</p> <!--passing children to a component-->
+    {#snippet secondChild(name)}
+        <p>Second Child {name}</p>
+    {/snippet}
+</Header> 
 <main>
     <p> Step {formState.step + 1}</p>
     
-
+<!--
     {#if formState.step === 0}
         <div>
             <label for = "name">Your name</label>
@@ -41,11 +46,22 @@
         }
     }}>Next</button>
     {/if}
+-->
+    {@render formStep({question:"What is your name?", id:"name", type:"text"})}
     {#if formState.error !==""}
         <p class="error">{formState.error}</p>
 
     {/if}
 </main>
+
+{#snippet formStep({question,id,type})}
+    <article>
+        <div>
+            <label for = {id}>{question}</label>
+            <input {type} id = {id} bind:value={formState[id]}/>
+        </div>
+    </article>
+{/snippet}
 
 <style> /*Note: the scope of these CSS styles is restricted to this component, not other components e.g. Header that are imported by it. Likewise, the scope is restricted to this component when other components import this one.*/
     div{
