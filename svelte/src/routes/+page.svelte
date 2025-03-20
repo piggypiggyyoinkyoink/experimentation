@@ -1,6 +1,6 @@
 <script>
     import Header from "$lib/components/Header.svelte"; //convention is upper case
-    
+    import { fly } from "svelte/transition";
     let formState = $state({
         answers:{},
         step:0,
@@ -62,7 +62,17 @@
     {/if}
     {#each questions as question, index (question.id)} <!-- question.id is a 'key' here. It is not needed for everything, but recommended when whatever is beig iterated through is dynamic. Index refers to the index of the loop, can be called anything, e.g. i-->
         {#if formState.step === index}
+        <!--<div transition:fly={{x:200, duration:200, opacity:0}}>     for same transition in and out-->
+
+        <!-- defining in and out transitions using Svelte. NOTE: transitions need to be imported (see top of code)-->
+         <!-- Other transitions include fade, blur, slide, scale, draw, crossfade - see docs :) -->
+        <div
+            in:fly={{x:200, duration:200, opacity:0, delay:200}}  
+            out:fly={{x:-200, duration:200, opacity:0}}
+        >
+
             {@render formStep(question)}
+        </div>
         {/if}
     {/each}
 
