@@ -7,6 +7,8 @@
         error:""
     });
 
+    $inspect(formState.step); //$inspect rune: console logs the value you pass into itand tells if it has been initialised or updated
+
     const questions = [
         {
             question: "What is your name?",
