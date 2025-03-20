@@ -1,3 +1,11 @@
+export class ExampleState{
+    value = $state(0);
+
+    up(){
+        this.value ++;
+    }
+}
+
 export function createState(){
     let value = $state(0);
     function up(){
