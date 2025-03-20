@@ -33,6 +33,22 @@
             formState.error = "Please fill out the form ";
         }
     }
+
+    $effect(()=>{ //by defualt, $effect code runs on component mount, i.e. when the component is added.
+        console.log("hello");
+        return ()=>{
+            console.log("goodbye"); //this runs on unmount, i.e. when component is destroyed or before effect reruns.
+        }
+    });
+
+    $effect(()=>{
+        //this will rerun whenever formState.step changes
+        console.log("formState", formState.step);
+        //NOTE: if you have a state whose value is based off of another state, use $derived, NOT $effect.
+        return ()=>{
+            console.log("before effect reruns", formState.step); //this actually outputs the new value for formState.step -> the effect reruns AFTER the variable value changes
+        }
+    });
 </script>
 
 <Header name = {formState.answers.name}/>
