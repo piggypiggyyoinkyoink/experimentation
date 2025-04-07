@@ -1,5 +1,6 @@
 <script>
     import Header from "$lib/components/Header.svelte"; //convention is upper case
+    import Number from "$lib/components/Number.svelte"; //convention is upper case
     import { fly } from "svelte/transition";
     let formState = $state({
         answers:{},
@@ -87,6 +88,9 @@
         <p class="error">{formState.error}</p>
 
     {/if}
+
+    <Number />
+    
 </main>
 
 
